@@ -20,17 +20,20 @@ public class UserController {
         this.userService = userService;
     }
 
+    // Add a new user
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User savedUser = userService.saveUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
+    // Get all users
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    // Get a user by ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
@@ -38,12 +41,28 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // Update an existing user
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(
+            @PathVariable Long id,
+            @RequestBody User updatedUser) {
+
+        if (userService.getUserById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User savedUser = userService.updateUser(id, updatedUser);
+        return ResponseEntity.ok(savedUser);
+    }
+
+    // Get users by type
     @GetMapping("/type/{userType}")
     public ResponseEntity<List<User>> getUsersByType(
             @PathVariable String userType) {
         return ResponseEntity.ok(userService.getUsersByType(userType));
     }
 
+    // Get a user by email
     @GetMapping("/email")
     public ResponseEntity<User> getUserByEmail(
             @RequestParam String email) {
@@ -52,6 +71,7 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // Delete a user
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         if (userService.getUserById(id).isEmpty()) {

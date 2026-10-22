@@ -39,6 +39,25 @@ public class SupportController {
         return service.saveAssignment(assignment);
     }
 
+
+@PutMapping("/{id}")
+public ResponseEntity<SupportAssignment> update(
+        @PathVariable Long id,
+        @RequestBody SupportAssignment assignment) {
+
+    if (service.getAssignmentById(id).isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    service.updateAssignment(id, assignment);
+
+    SupportAssignment updatedAssignment =
+            service.getAssignmentById(id).orElseThrow();
+
+    return ResponseEntity.ok(updatedAssignment);
+}
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 
